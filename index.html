@@ -6,6 +6,95 @@
 </head>
 <body>
   <h1>LCD 모래시계 애니메이션</h1>
-  <p>아두이노와 I2C LCD를 활용한 애니메이션 과제</p>
+  <p>동작중임을 나타내는 캐릭터 모션 만들기</p>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCD 모래시계 애니메이션</title>
+</head>
+<body>
+  <h1>LCD 모래시계 애니메이션</h1>
+
+  <h2>1. 코드</h2>
+  <p>
+    
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+byte sand[7][8] = {
+  {B11111, B11111, B01110, B01010, B01010, B01010, B10001, B11111},
+  {B11111, B11011, B01110, B01110, B01010, B01010, B10001, B11111},
+  {B11111, B10011, B01110, B01110, B01110, B01010, B10001, B11111},
+  {B11111, B10001, B01110, B01110, B01110, B01110, B10001, B11111},
+  {B11111, B10001, B01010, B01110, B01110, B01110, B10101, B11111},
+  {B11111, B10001, B01010, B01010, B01110, B01110, B11101, B11111},
+  {B11111, B10001, B01010, B01010, B01010, B01110, B11111, B11111}
+};
+
+int frame = 0;
+int direction = 1;
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+
+  for (int i = 0; i < 7; i++)
+    lcd.createChar(i, sand[i]);
+}
+
+void loop() {
+  lcd.setCursor(0, 0);
+  lcd.write((uint8_t)frame);
+
+  if (frame == 0 || frame == 6)
+    delay(1500);
+  else
+    delay(300);
+
+  if (frame == 6) direction = -1;
+  if (frame == 0) direction = 1;
+
+  frame += direction;
+}
+
+  </p>
+
+  <h2>2. 설계 및 구현</h2>
+  <p>
+    LCD의 Custom Character 기능을 사용하여
+    5×8 도트로 이루어진 모래시계를 구현하였다.
+    7개의 프레임을 일정한 시간 간격으로 출력하여
+    모래가 움직이는 모습을 표현하였다.
+  </p>
+  <p>
+    모래가 아래로 모두 이동하면 잠시 정지하고,
+    프레임을 역순으로 출력하여 다시 위로 올라가도록
+    하였다. 이 과정을 무한 반복하도록 구성하였다.
+  </p>
+
+  <h2>4. 고찰</h2>
+  <p>
+    LCD 한 칸의 제한된 도트만으로 모래시계의
+    형태와 움직임을 동시에 표현하는 데 어려움이 있었다.
+    초기에는 모래가 한 알씩 움직이는 방식으로
+    구성하였으나 자연스럽지 않아 여러 알이
+    동시에 움직이도록 수정하였다.
+  </p>
+  <p>
+    또한 모래가 한쪽으로 모두 이동하면
+    잠시 멈추도록 하여 동작을 구분하였다.
+    다만 제한된 해상도와 프레임 수로 인해
+    실제 모래의 흐름을 완벽하게 표현하기는 어려웠다.
+    향후 프레임 수를 추가하고 출력 속도를
+    조절하면 더 자연스러운 애니메이션을
+    구현할 수 있을 것으로 생각한다.
+  </p>
 </body>
 </html>
